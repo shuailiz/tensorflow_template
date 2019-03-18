@@ -31,6 +31,8 @@ class TrainCNN(object):
                                                                      labels=self.graph_constructor.y_true)
         self.cost = tf.reduce_mean(self.cross_entropy)
         self.optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(cost)
+        self.correct_prediction = tf.equal(y_pred_cls, y_true_cls)
+        self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 
     def read_total_iter(self):
         tt_iter_file = os.path.join(self.model_dir, 'total_iteration.txt')
@@ -54,6 +56,7 @@ class TrainCNN(object):
         '''
         self.initialize_graph()
         self.read_total_iter()
+        saver = tf.train.Saver()
         with tf.Session() as session:
             session.run(tf.global_variables_initializer())
             for i in range(self.total_iter, self.total_iter + num_iterations):
@@ -64,12 +67,12 @@ class TrainCNN(object):
                 feed_dict_valid = {x: x_batch_valid,
                                    y_true: y_batch_valid}
                 session.run(self.optimizer, feed_dict=feed_dict_train)
-                if i % int(data.train.num_examples/batch_size) == 0: 
-                    val_loss = session.run(cost, feed_dict=feed_dict_val)
-                    epoch = int(i / int(data.train.num_examples/batch_size))    
+                if i % int(self.data_process.get_training_data_size()/batch_size) == 0: 
+                    val_loss = session.run(self.cost, feed_dict=feed_dict_valid)
+                    epoch = int(i / int(self.data_process.get_training_data_size()/batch_size))
             
                     show_progress(epoch, feed_dict_tr, feed_dict_val, val_loss, session)
-                    saver.save(session, 'dogs-cats-model') 
+                    saver.save(session, 'trained-model') 
 
 
                 total_iterations += num_iteration
