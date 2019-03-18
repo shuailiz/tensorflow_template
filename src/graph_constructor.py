@@ -11,6 +11,7 @@ class CNNGraph(object):
     def reset(self):
         self.conv_layers = []
         self.fc_layers = []
+        self.last_layer = None
         self.x = None
         self.y_true = None
         self.y_true_cls = None
@@ -78,7 +79,7 @@ class CNNGraph(object):
         self.x = tf.placeholder(tf.float32, shape=[None, input_size_x, input_size_y, input_channels], name='x')
         self.y_true = tf.placeholder(tf.float32, shape=[None, num_classes], name='y_true')
         self.y_true_cls = tf.argmax(self.y_true, dimension=1)
-        layer_input = x
+        layer_input = self.x
         layer_input_channels = input_channels
         # create all the conv layers
         for conv_filter_size, conv_num_filters in zip(conv_filter_sizes, conv_nums_filters):

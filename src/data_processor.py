@@ -75,3 +75,12 @@ class DataProcesser(object):
         training_batch: The batch of training data
         '''
         pass
+
+    def next_validate_batch(self, batch_size):
+        ''' Generate the next batch of data for validation
+        param:
+        batch_size: How large the batch will be
+        return:
+        validation_batch: The batch of validation data
+        '''
+        pass
