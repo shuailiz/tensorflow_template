@@ -8,7 +8,7 @@ class TrainCNN(object):
     def __init__(self, input_x, input_y, input_channel,
                  num_classes, conv_filter_size, conv_nums_filters, fc_layer_size):
         self.total_iter = 0
-        self.model_dir = os.path.join(os.getcwd(), '../models')
+        self.model_path = os.path.join(os.getcwd(), '../models/')
         self.batch_size = 50
 
         self.input_x = input_x
@@ -54,12 +54,20 @@ class TrainCNN(object):
         param:
         num_iterations: The number of iterations to train
         '''
-        self.initialize_graph()
-        self.read_total_iter()
-        saver = tf.train.Saver()
+        # TODO:: NEED TO LOAD AND SAVE THE TOTAL ITER
         with tf.Session() as session:
+            if os.path.isfile(self.model_path + '.meta'):
+                # Model has been trained. Restore
+                saver = tf.import_meta_graph(self.model_path + ".meta")
+                saver.restore(session, tf.train.latest_checkpoint(self.model_path))
+            else:
+                # Otherwise create the graph
+                self.initialize_graph()
+                self.read_total_iter()
+                saver = tf.train.Saver()
+
             session.run(tf.global_variables_initializer())
-            for i in range(self.total_iter, self.total_iter + num_iterations):
+            for step in range(self.total_iter, self.total_iter + num_iterations):
                 x_batch_train, y_batch_train = self.data_process.next_training_batch(self.batch_size)
                 x_batch_valid, y_batch_valid = self.data_process.next_validate_batch(self.batch_size)
                 feed_dict_train = {x: x_batch_train
@@ -67,12 +75,12 @@ class TrainCNN(object):
                 feed_dict_valid = {x: x_batch_valid,
                                    y_true: y_batch_valid}
                 session.run(self.optimizer, feed_dict=feed_dict_train)
-                if i % int(self.data_process.get_training_data_size()/batch_size) == 0: 
+                if step % int(self.data_process.get_training_data_size()/batch_size) == 0: 
                     val_loss = session.run(self.cost, feed_dict=feed_dict_valid)
-                    epoch = int(i / int(self.data_process.get_training_data_size()/batch_size))
+                    epoch = int(step / int(self.data_process.get_training_data_size()/batch_size))
             
                     show_progress(epoch, feed_dict_tr, feed_dict_val, val_loss, session)
-                    saver.save(session, 'trained-model') 
+                    saver.save(session, self.model_path + 'trained_model', global_step=step) 
 
 
-                total_iterations += num_iteration
+            total_iterations += num_iteration
