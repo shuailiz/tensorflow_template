@@ -49,19 +49,19 @@ class DataProcesser(object):
         '''
         pass
 
-    def prepare_training_data(self, data_set):
+    def prepare_training_data(self, training_size):
         ''' Prepare training data for tensor flow network
         param:
-        data_set: The whole data set
+        training_size (double): The the size of the training set in the whole data set
         return:
         training_data: The data for training
         '''
         pass
-
-    def prepare_testing_data(self, data_set):
-        ''' Prepare testing data for tensor flow network
+    
+    def prepare_validation_data(self, validataion_size):
+        ''' Prepare validation data for tensor flow network
         param:
-        data_set: The whole data set
+        validation_size (double): The the size of the validation set in the whole data set
         return:
         testing_data: The data for testing
         '''
