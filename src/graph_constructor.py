@@ -70,7 +70,6 @@ class CNNGraph(object):
         layer = tf.matmul(input_layer, weights) + biases
         if use_relu:
             layer = tf.nn.relu(layer)
-
         return layer
 
     def create_graph(self, input_size_x, input_size_y, input_channels, num_classes, conv_filter_sizes, conv_nums_filters, fc_layer_sizes):
@@ -111,5 +110,6 @@ class CNNGraph(object):
                                                input_dim=fc_layer_sizes[-1],
                                                output_dim=num_classes,
                                                use_relu=False)
+        self.last_layer = tf.identity(self.last_layer, name='last_layer')
         self.y_pred = tf.nn.softmax(self.last_layer, name='y_pred')
         self.y_pred_cls = tf.argmax(self.y_pred, dimension=1)
