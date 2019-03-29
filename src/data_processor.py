@@ -2,8 +2,17 @@
 
 class DataProcesser(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, class_names):
+        self.class_names = class_names
+        self.total_num_data_points = 0
+        self.data_loaded = False
+
+        self.training_data_start_ind = 0
+        self.training_data_end_ind = 0
+        self.valid_data_start_ind = 0
+        self.valid_data_start_ind = 0
+        self.training_ind_in_epoch = 0
+        self.valid_ind_in_epoch = 0
 
     def read_data_from_folder(self, folder_path, data_type):
         ''' Read data from a folder
@@ -49,23 +58,20 @@ class DataProcesser(object):
         '''
         pass
 
-    def prepare_training_data(self, training_size):
-        ''' Prepare training data for tensor flow network
+    def divide_training_valid_data(self, training_size):
+        ''' divide the data into training and validation for tensor flow network
         param:
         training_size (double): The the size of the training set in the whole data set
         return:
         training_data: The data for training
         '''
-        pass
-    
-    def prepare_validation_data(self, validataion_size):
-        ''' Prepare validation data for tensor flow network
-        param:
-        validation_size (double): The the size of the validation set in the whole data set
-        return:
-        testing_data: The data for testing
-        '''
-        pass 
+        training_data_num = int(training_size * self.total_num_data_points)
+        self.training_data_start_ind = 0
+        self.training_data_end_ind = training_data_num - 1
+        self.valid_data_start_ind = training_data_num
+        self.valid_data_end_ind = self.total_num_data_points - 1
+        self.training_ind_in_epoch = self.training_data_start_ind
+        self.valid_ind_in_epoch = self.valid_data_start_ind
 
     def next_training_batch(self, batch_size):
         ''' Generate the next batch of data for training
