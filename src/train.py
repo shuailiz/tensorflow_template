@@ -35,7 +35,7 @@ class TrainCNN(object):
         self.accuracy = tf.reduce_mean(tf.cast(self.correct_prediction, tf.float32))
 
     def read_total_iter(self):
-        tt_iter_file = os.path.join(self.model_dir, 'total_iteration.txt')
+        tt_iter_file = os.path.join(self.model_path, 'total_iteration.txt')
         with open(tt_iter_file, 'r') as f:
             try:
                 self.total_iter = int(f.read())
